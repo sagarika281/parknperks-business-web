@@ -1,0 +1,207 @@
+export type MenuCategory = 'Hot Beverages' | 'Cold Beverages' | 'Food' | 'Specials'
+
+export type MenuItem = {
+  id: string
+  name: string
+  description: string
+  category: MenuCategory
+  price: number
+  available: boolean
+  ordersToday: number
+  weeklyAvg: number
+}
+
+export const MENU_FILTERS: Array<'All' | MenuCategory> = [
+  'All',
+  'Hot Beverages',
+  'Cold Beverages',
+  'Food',
+  'Specials',
+]
+
+export const MENU_ITEMS: MenuItem[] = [
+  {
+    id: 'espresso',
+    name: 'Espresso',
+    description: 'Single origin double shot',
+    category: 'Hot Beverages',
+    price: 120,
+    available: true,
+    ordersToday: 18,
+    weeklyAvg: 76,
+  },
+  {
+    id: 'americano',
+    name: 'Americano',
+    description: 'Espresso with hot water',
+    category: 'Hot Beverages',
+    price: 140,
+    available: true,
+    ordersToday: 11,
+    weeklyAvg: 44,
+  },
+  {
+    id: 'cappuccino',
+    name: 'Cappuccino',
+    description: 'Espresso, steamed milk, foam',
+    category: 'Hot Beverages',
+    price: 180,
+    available: true,
+    ordersToday: 9,
+    weeklyAvg: 38,
+  },
+  {
+    id: 'latte',
+    name: 'Latte',
+    description: 'Espresso with steamed milk',
+    category: 'Hot Beverages',
+    price: 190,
+    available: true,
+    ordersToday: 14,
+    weeklyAvg: 61,
+  },
+  {
+    id: 'flat-white',
+    name: 'Flat White',
+    description: 'Espresso with steamed milk',
+    category: 'Hot Beverages',
+    price: 200,
+    available: true,
+    ordersToday: 7,
+    weeklyAvg: 29,
+  },
+  {
+    id: 'oat-milk-latte',
+    name: 'Oat Milk Latte',
+    description: 'Latte with oat milk',
+    category: 'Hot Beverages',
+    price: 220,
+    available: true,
+    ordersToday: 8,
+    weeklyAvg: 34,
+  },
+  {
+    id: 'cardamom-chai',
+    name: 'Cardamom Chai',
+    description: 'House masala chai',
+    category: 'Hot Beverages',
+    price: 130,
+    available: true,
+    ordersToday: 15,
+    weeklyAvg: 62,
+  },
+  {
+    id: 'cold-brew',
+    name: 'Cold Brew',
+    description: '12-hour steeped cold brew',
+    category: 'Cold Beverages',
+    price: 200,
+    available: true,
+    ordersToday: 6,
+    weeklyAvg: 28,
+  },
+  {
+    id: 'iced-latte',
+    name: 'Iced Latte',
+    description: 'Espresso over ice + milk',
+    category: 'Cold Beverages',
+    price: 210,
+    available: true,
+    ordersToday: 10,
+    weeklyAvg: 41,
+  },
+  {
+    id: 'vanilla-frappe',
+    name: 'Vanilla Frappé',
+    description: 'Blended ice + vanilla',
+    category: 'Cold Beverages',
+    price: 240,
+    available: false,
+    ordersToday: 0,
+    weeklyAvg: 18,
+  },
+  {
+    id: 'hazelnut-cold-brew',
+    name: 'Hazelnut Cold Brew',
+    description: 'Cold brew + hazelnut syrup',
+    category: 'Cold Beverages',
+    price: 230,
+    available: true,
+    ordersToday: 5,
+    weeklyAvg: 22,
+  },
+  {
+    id: 'nimbu-soda',
+    name: 'Nimbu Soda',
+    description: 'Fresh lime soda',
+    category: 'Cold Beverages',
+    price: 100,
+    available: true,
+    ordersToday: 12,
+    weeklyAvg: 48,
+  },
+  {
+    id: 'butter-croissant',
+    name: 'Butter Croissant',
+    description: 'Flaky, freshly baked',
+    category: 'Food',
+    price: 120,
+    available: true,
+    ordersToday: 9,
+    weeklyAvg: 36,
+  },
+  {
+    id: 'banana-bread',
+    name: 'Banana Bread',
+    description: 'Moist, classic slice',
+    category: 'Food',
+    price: 150,
+    available: true,
+    ordersToday: 4,
+    weeklyAvg: 19,
+  },
+  {
+    id: 'avocado-toast',
+    name: 'Avocado Toast',
+    description: 'Sourdough + avo + chilli',
+    category: 'Food',
+    price: 220,
+    available: true,
+    ordersToday: 6,
+    weeklyAvg: 24,
+  },
+  {
+    id: 'granola-bowl',
+    name: 'Granola Bowl',
+    description: 'Oats, nuts, honey, berries',
+    category: 'Food',
+    price: 180,
+    available: false,
+    ordersToday: 0,
+    weeklyAvg: 11,
+  },
+  {
+    id: 'seasonal-special',
+    name: 'Seasonal Special',
+    description: 'Chef’s pick — ask barista',
+    category: 'Specials',
+    price: 260,
+    available: true,
+    ordersToday: 3,
+    weeklyAvg: 14,
+  },
+  {
+    id: 'loyalty-bundle',
+    name: 'Loyalty Bundle',
+    description: 'Latte + croissant + extras',
+    category: 'Specials',
+    price: 350,
+    available: true,
+    ordersToday: 2,
+    weeklyAvg: 9,
+  },
+]
+
+export function formatPrice(price: number) {
+  return `₹${price.toLocaleString('en-IN')}`
+}

@@ -1,0 +1,15 @@
+export const paths = {
+  login: '/login',
+  register: '/register',
+  home: '/home',
+  verified: '/verified',
+  welcome: '/welcome',
+  dashboard: '/dashboard',
+  counter: '/counter',
+  members: '/members',
+  agenticCommerce: '/agentic-commerce',
+  loyalty: '/loyalty',
+  inventory: '/inventory',
+  customers: '/customers',
+  settings: '/settings',
+} as const
