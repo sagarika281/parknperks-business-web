@@ -1,7 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-const PROMPTS = [
+const OWNER_PROMPTS = [
+  'Get us ready for the rain this evening',
+  'Why is Lifestyle Bridge costing more?',
+  "Review today's business",
+] as const
+
+const STAFF_PROMPTS = [
   'Guide me through my shift',
   'I found a stock issue',
   'Complete my checklist',
@@ -9,6 +15,7 @@ const PROMPTS = [
 
 type AgentActionPanelProps = {
   role?: string
+  employeeName?: string
   onClose: () => void
   onOpenWorkspace?: () => void
 }
@@ -28,11 +35,23 @@ function formatPanelDate(date: Date) {
 
 export function AgentActionPanel({
   role = 'Staff',
+  employeeName = '',
   onClose,
   onOpenWorkspace,
 }: AgentActionPanelProps) {
   const [moreOpen, setMoreOpen] = useState(false)
   const [listening, setListening] = useState(true)
+  const [typingOpen, setTypingOpen] = useState(false)
+  const [requestText, setRequestText] = useState('')
+  const typeInputRef = useRef<HTMLInputElement>(null)
+  const isOwner = /owner/i.test(role)
+  const firstName = employeeName.split(' ')[0]
+  const prompts = isOwner ? OWNER_PROMPTS : STAFF_PROMPTS
+  const headline =
+    isOwner && firstName
+      ? `${greeting()}, ${firstName}. Ready to run the evening?`
+      : `${greeting()}. Here's your shift overview.`
+  const roleMark = (employeeName.trim()[0] || role.trim()[0] || 'N').toUpperCase()
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -41,6 +60,11 @@ export function AgentActionPanel({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
+
+  useEffect(() => {
+    if (!typingOpen) return
+    typeInputRef.current?.focus()
+  }, [typingOpen])
 
   return createPortal(
     <>
@@ -59,9 +83,9 @@ export function AgentActionPanel({
         <header className="agent-action-head">
           <span className="agent-action-role">
             <span className="agent-action-role-mark" aria-hidden="true">
-              N
+              {roleMark}
             </span>
-            {role}
+            {isOwner ? 'Owner' : role}
           </span>
           <div className="agent-action-identity">
             <strong>PARK[N]PERKS</strong>
@@ -104,7 +128,7 @@ export function AgentActionPanel({
         </header>
 
         <div className="agent-action-body">
-          <h2>{greeting()}. Here&apos;s your shift overview.</h2>
+          <h2>{headline}</h2>
 
           <div className="agent-action-voice">
             <button
@@ -152,7 +176,12 @@ export function AgentActionPanel({
               </svg>
               Hear my briefing
             </button>
-            <button type="button" className="agent-action-type">
+            <button
+              type="button"
+              className={typingOpen ? 'agent-action-type is-active' : 'agent-action-type'}
+              aria-pressed={typingOpen}
+              onClick={() => setTypingOpen((open) => !open)}
+            >
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
                 <rect x="3.5" y="6" width="17" height="12" rx="2" stroke="currentColor" strokeWidth="1.7" />
                 <path d="M7 15h10M7 10h.01M10 10h.01M13 10h.01M16 10h.01" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
@@ -161,9 +190,38 @@ export function AgentActionPanel({
             </button>
           </div>
 
+          {typingOpen ? (
+            <form
+              className="agent-action-compose"
+              onSubmit={(event) => {
+                event.preventDefault()
+                setRequestText('')
+              }}
+            >
+              <input
+                ref={typeInputRef}
+                type="text"
+                value={requestText}
+                onChange={(event) => setRequestText(event.target.value)}
+                placeholder="Type your request..."
+                aria-label="Type your request"
+              />
+              <button type="submit" aria-label="Send request" disabled={!requestText.trim()}>
+                →
+              </button>
+            </form>
+          ) : null}
+
           <div className="agent-action-prompts">
-            {PROMPTS.map((prompt) => (
-              <button key={prompt} type="button">
+            {prompts.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => {
+                  setTypingOpen(true)
+                  setRequestText(prompt)
+                }}
+              >
                 {prompt}
               </button>
             ))}

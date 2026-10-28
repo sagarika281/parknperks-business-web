@@ -218,6 +218,7 @@ export function AgenticCommercePage({
       {agentOpen ? (
         <AgentActionPanel
           role={employeeRole}
+          employeeName={employeeName}
           onClose={() => setAgentOpen(false)}
           onOpenWorkspace={() => setAgentOpen(false)}
         />

@@ -2177,6 +2177,62 @@
   color: #1c1612;
 }
 
+.agent-action-type.is-active {
+  border-color: #14615c;
+  color: #14615c;
+}
+
+.agent-action-compose {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  gap: 10px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.agent-action-compose input {
+  width: 100%;
+  min-height: 48px;
+  border: 1.5px solid #14615c;
+  border-radius: 14px;
+  background: #fff8ef;
+  color: #1c1612;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.agent-action-compose input::placeholder {
+  color: #9a9186;
+  font-weight: 600;
+}
+
+.agent-action-compose input:focus {
+  box-shadow: 0 0 0 3px rgba(20, 97, 92, 0.12);
+}
+
+.agent-action-compose button[type='submit'] {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: #14615c;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.agent-action-compose button[type='submit']:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .agent-action-prompts {
   display: flex;
   flex-direction: column;

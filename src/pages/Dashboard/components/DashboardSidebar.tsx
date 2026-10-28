@@ -5,9 +5,11 @@ import { paths } from '@/routes/paths'
 import { ProfileAvatar } from '@/shared/components'
 import { useEmployeeSession } from '@/shared/session'
 import { SIDEBAR_NAV } from '../constants/nav'
-import { JulesPanel } from './JulesPanel'
+import { JulesPanel, JulesWorkspace } from '@/pages/Jules'
 import { ProfileSwitcher } from './ProfileSwitcher'
 import { SidebarNavIcon } from './SidebarNavIcon'
+
+type JulesMode = 'closed' | 'panel' | 'workspace'
 
 const NAV_PATHS: Partial<Record<(typeof SIDEBAR_NAV)[number]['id'], string>> = {
   counter: paths.counter,
@@ -49,7 +51,7 @@ export function DashboardSidebar({
   const [outlet, setOutlet] = useState<(typeof OUTLETS)[number]>('Indiranagar')
   const [outletOpen, setOutletOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(readCollapsed)
-  const [julesOpen, setJulesOpen] = useState(false)
+  const [julesMode, setJulesMode] = useState<JulesMode>('closed')
   const [profileOpen, setProfileOpen] = useState(false)
   const [compactNav, setCompactNav] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1100px)').matches,
@@ -245,7 +247,7 @@ export function DashboardSidebar({
             Collapse
           </button>
 
-          <button type="button" className="dash-sidebar-ghost" onClick={() => setJulesOpen(true)}>
+          <button type="button" className="dash-sidebar-ghost" onClick={() => setJulesMode('panel')}>
             <span className="dash-sidebar-ghost-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
                 <path
@@ -412,7 +414,7 @@ export function DashboardSidebar({
           type="button"
           className="dash-rail-btn is-utility"
           aria-label="Jules"
-          onClick={() => setJulesOpen(true)}
+          onClick={() => setJulesMode('panel')}
         >
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
             <path
@@ -449,13 +451,21 @@ export function DashboardSidebar({
         onSelect={switchProfile}
         onSignOut={signOut}
       />
-      {julesOpen ? (
+      {julesMode === 'panel' ? (
         <JulesPanel
-          onClose={() => setJulesOpen(false)}
-          onOpenWorkspace={() => {
-            setJulesOpen(false)
-            navigate(paths.agenticCommerce)
-          }}
+          employeeName={employeeName}
+          employeeRole={employeeRole}
+          onClose={() => setJulesMode('closed')}
+          onOpenWorkspace={() => setJulesMode('workspace')}
+        />
+      ) : null}
+      {julesMode === 'workspace' ? (
+        <JulesWorkspace
+          employeeName={employeeName}
+          employeeRole={employeeRole}
+          outletName={outlet}
+          onBackToDrawer={() => setJulesMode('panel')}
+          onClose={() => setJulesMode('closed')}
         />
       ) : null}
     </aside>

@@ -42,6 +42,7 @@ pages/<PageName>/
 | `Verified` | Full-screen PIN success — then continues to Welcome |
 | `Welcome` | Full-screen post-PIN welcome (shift overview) — not nested under Home |
 | `Dashboard` | Full-screen business dashboard (metrics + widgets + right sidebar) |
+| `Jules` | Jules AI panel + workspace (modals opened from sidebar; not a route) |
 
 From mobile: keep page-owned components colocated under the page. Do **not** nest page modals inside a panel component — the page composes them.
 
