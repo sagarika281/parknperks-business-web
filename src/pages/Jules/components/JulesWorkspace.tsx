@@ -13,6 +13,29 @@ import '../Jules.css'
 
 type CentreTab = 'pipeline' | 'plan' | 'actions'
 type RailTab = 'evidence' | 'approvals' | 'audit'
+type ApprovalStatus = 'pending' | 'approved' | 'rejected'
+type ApprovalId = 'campaign' | 'promotion' | 'purchase'
+
+const APPROVAL_ITEMS = [
+  {
+    id: 'campaign',
+    icon: '📣',
+    title: 'Send WhatsApp campaign to 18 members',
+    detail: 'Expected: ₹1,200–₹1,900 revenue',
+  },
+  {
+    id: 'promotion',
+    icon: '🎁',
+    title: 'Increase promotional reward from 5 to 10 Beans',
+    detail: 'Max cost ₹180',
+  },
+  {
+    id: 'purchase',
+    icon: '📦',
+    title: 'Submit ₹9,840 emergency purchase order to Blue Tokai',
+    detail: 'Immediate stock replenishment',
+  },
+] as const
 
 /** Stop on Policy Check (index 5) after walking steps one by one. */
 const PIPELINE_HOLD_AT = 5
@@ -51,6 +74,11 @@ export function JulesWorkspace({
   const [draft, setDraft] = useState('')
   const [activeStep, setActiveStep] = useState(-1)
   const [pipelineRun, setPipelineRun] = useState(0)
+  const [approvalStatuses, setApprovalStatuses] = useState<Record<ApprovalId, ApprovalStatus>>({
+    campaign: 'pending',
+    promotion: 'pending',
+    purchase: 'pending',
+  })
   const stepTimerRef = useRef<number | null>(null)
   const firstName = employeeName.split(' ')[0] || 'there'
   const initial = (employeeName.trim()[0] || 'S').toUpperCase()
@@ -128,6 +156,18 @@ export function JulesWorkspace({
         },
       ])
     }, STEP_MS * 2)
+  }
+
+  function decideApproval(id: string, status: Exclude<ApprovalStatus, 'pending'>) {
+    setApprovalStatuses((current) => ({ ...current, [id]: status }))
+  }
+
+  function approveAll() {
+    setApprovalStatuses((current) => ({
+      campaign: current.campaign === 'pending' ? 'approved' : current.campaign,
+      promotion: current.promotion === 'pending' ? 'approved' : current.promotion,
+      purchase: current.purchase === 'pending' ? 'approved' : current.purchase,
+    }))
   }
 
   return createPortal(
@@ -250,55 +290,9 @@ export function JulesWorkspace({
                 <div
                   key={item}
                   className="jules-plan-item"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 14,
-                    width: '100%',
-                    minHeight: 52,
-                    padding: '14px 0',
-                    borderBottom:
-                      index === PLAN_ITEMS.length - 1
-                        ? 'none'
-                        : '1px solid rgba(29, 77, 79, 0.12)',
-                    boxSizing: 'border-box',
-                  }}
                 >
-                  <span
-                    className="jules-plan-badge"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 28,
-                      height: 28,
-                      minWidth: 28,
-                      borderRadius: '50%',
-                      background: '#134e4a',
-                      color: '#fff',
-                      fontSize: 12,
-                      fontWeight: 800,
-                      lineHeight: 1,
-                      flexShrink: 0,
-                    }}
-                  >
-                    {index + 1}
-                  </span>
-                  <span
-                    className="jules-plan-copy"
-                    style={{
-                      display: 'block',
-                      flex: '1 1 auto',
-                      minWidth: 0,
-                      color: '#1d4d4f',
-                      fontSize: 15.5,
-                      fontWeight: 600,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    {item}
-                  </span>
+                  <span className="jules-plan-badge">{index + 1}</span>
+                  <span className="jules-plan-copy">{item}</span>
                 </div>
               ))}
             </div>
@@ -309,60 +303,18 @@ export function JulesWorkspace({
           <div className="jules-ws-actions">
             <h2>Completed Actions</h2>
             <div className="jules-ws-actions-list">
-              {COMPLETED_ACTIONS.map((item, index) => (
+              {COMPLETED_ACTIONS.map((item) => (
                 <div
                   key={item}
                   className="jules-ws-actions-row"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 14,
-                    width: '100%',
-                    minHeight: 52,
-                    padding: '14px 0',
-                    borderBottom:
-                      index === COMPLETED_ACTIONS.length - 1
-                        ? 'none'
-                        : '1px solid rgba(29, 77, 79, 0.12)',
-                    boxSizing: 'border-box',
-                  }}
                 >
                   <span
                     className="jules-ws-action-check"
                     aria-hidden="true"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 28,
-                      height: 28,
-                      minWidth: 28,
-                      borderRadius: '50%',
-                      background: '#e7f6ee',
-                      color: '#1f8f4e',
-                      fontSize: 14,
-                      fontWeight: 800,
-                      lineHeight: 1,
-                      flexShrink: 0,
-                    }}
                   >
                     ✓
                   </span>
-                  <span
-                    className="jules-plan-copy"
-                    style={{
-                      display: 'block',
-                      flex: '1 1 auto',
-                      minWidth: 0,
-                      color: '#1d4d4f',
-                      fontSize: 15.5,
-                      fontWeight: 600,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    {item}
-                  </span>
+                  <span className="jules-plan-copy">{item}</span>
                 </div>
               ))}
             </div>
@@ -401,7 +353,7 @@ export function JulesWorkspace({
                 </span>
                 <span className="jules-ws-evidence-copy">
                   <strong>{item.title}</strong>
-                  <span>{item.detail}</span>
+                  {item.detail ? <span>{item.detail}</span> : null}
                 </span>
                 <em className={item.status === 'Forecast' ? 'is-forecast' : 'is-confirmed'}>
                   {item.status}
@@ -409,10 +361,70 @@ export function JulesWorkspace({
               </li>
             ))}
           </ul>
+        ) : railTab === 'approvals' ? (
+          <div className="jules-ws-approvals">
+            <ul className="jules-ws-approval-list">
+              {APPROVAL_ITEMS.map((item) => {
+                const status = approvalStatuses[item.id]
+                return (
+                  <li className="jules-ws-approval-card" key={item.id}>
+                    <strong>
+                      <span aria-hidden="true">{item.icon}</span>
+                      {item.title}
+                    </strong>
+                    <span className="jules-ws-approval-detail">{item.detail}</span>
+                    {status === 'pending' ? (
+                      <div className="jules-ws-approval-controls">
+                        <button
+                          type="button"
+                          className="is-approve"
+                          onClick={() => decideApproval(item.id, 'approved')}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="is-reject"
+                          onClick={() => decideApproval(item.id, 'rejected')}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    ) : (
+                      <span className={`jules-ws-approval-status is-${status}`}>
+                        {status === 'approved' ? 'Approved' : 'Rejected'}
+                      </span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+            <button type="button" className="jules-ws-approve-all" onClick={approveAll}>
+              Approve All
+            </button>
+          </div>
         ) : (
-          <div className="jules-ws-empty">
-            <h2>{railTab === 'approvals' ? 'Approvals' : 'Audit'}</h2>
-            <p>This view will open with the next Jules step.</p>
+          <div className="jules-ws-audit">
+            <p>
+              <span>Now</span>
+              <span>Phase: idle</span>
+            </p>
+            <p>
+              <span>Scenario: rain</span>
+            </p>
+            <p>
+              <span>Approvals: </span>
+              {APPROVAL_ITEMS.map((item, index) => (
+                <span key={item.id}>
+                  {index > 0 ? ', ' : ''}
+                  {approvalStatuses[item.id]}
+                </span>
+              ))}
+            </p>
+            <p>
+              <span>User: {employeeName}</span>
+              <span>({roleLabel})</span>
+            </p>
           </div>
         )}
       </aside>
@@ -422,72 +434,15 @@ export function JulesWorkspace({
 }
 
 function EvidenceIcon({ icon }: { icon: EvidenceItem['icon'] }) {
-  const common = {
-    viewBox: '0 0 24 24',
-    width: 16,
-    height: 16,
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.7,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
+  const icons: Record<EvidenceItem['icon'], string> = {
+    weather: '🌧️',
+    stock: '📦',
+    staff: '👥',
+    members: '🐾',
+    sales: '📊',
+    shipment: '📦',
+    campaigns: '📣',
+    calendar: '🗓️',
   }
-
-  if (icon === 'weather') {
-    return (
-      <svg {...common}>
-        <path d="M8 16a4 4 0 1 1 1.2-7.8A5 5 0 1 1 17 14H8z" />
-      </svg>
-    )
-  }
-  if (icon === 'stock') {
-    return (
-      <svg {...common}>
-        <path d="M4 8h16l-1.5 11H5.5L4 8zM9 8V6a3 3 0 0 1 6 0v2" />
-      </svg>
-    )
-  }
-  if (icon === 'staff') {
-    return (
-      <svg {...common}>
-        <circle cx="9" cy="8" r="2.4" />
-        <circle cx="16" cy="9" r="2" />
-        <path d="M4.5 18c.6-2.4 2.2-3.6 4.5-3.6s3.9 1.2 4.5 3.6M14 14.6c1.2.2 2.2.9 2.8 2.4" />
-      </svg>
-    )
-  }
-  if (icon === 'members') {
-    return (
-      <svg {...common}>
-        <path d="M12 3.5 14 9h5.5L15 12.5 16.8 18 12 14.8 7.2 18 9 12.5 4.5 9H10z" />
-      </svg>
-    )
-  }
-  if (icon === 'sales') {
-    return (
-      <svg {...common}>
-        <path d="M4 19h16M7 16V10M12 16V6M17 16v-4" />
-      </svg>
-    )
-  }
-  if (icon === 'shipment') {
-    return (
-      <svg {...common}>
-        <path d="M3 7h11v10H3zM14 10h5l2 3v4h-7V10zM7 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM17 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
-      </svg>
-    )
-  }
-  if (icon === 'campaigns') {
-    return (
-      <svg {...common}>
-        <path d="M5 10v4M8 8v8M12 5v14M16 9v6M19 11v2" />
-      </svg>
-    )
-  }
-  return (
-    <svg {...common}>
-      <rect x="4" y="5" width="16" height="15" rx="2" />
-      <path d="M8 3v4M16 3v4M4 10h16" />
-    </svg>
-  )
+  return <span aria-hidden="true">{icons[icon]}</span>
 }

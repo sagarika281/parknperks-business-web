@@ -26,7 +26,7 @@ export const EVIDENCE_ITEMS: EvidenceItem[] = [
   {
     id: 'weather',
     title: 'IMD Weather Forecast',
-    detail: 'Heavy rain 4–7 PM · 82% confidence',
+    detail: '',
     status: 'Confirmed',
     icon: 'weather',
   },

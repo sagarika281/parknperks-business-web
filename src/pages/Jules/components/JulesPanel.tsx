@@ -200,7 +200,15 @@ export function JulesPanel({
               </ul>
             </div>
 
-            <button type="button" className="jules-start" onClick={onOpenWorkspace}>
+            <button
+              type="button"
+              className="jules-start"
+              onClick={() => {
+                setView('agent')
+                setTypingOpen(false)
+                setRequestText('')
+              }}
+            >
               Start Using Jules →
             </button>
           </>
